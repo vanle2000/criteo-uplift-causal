@@ -24,6 +24,23 @@ import pandas as pd
 from . import config as C
 
 
+def rank_desc(score: np.ndarray, seed: int = C.SEED) -> np.ndarray:
+    """Indices ordering `score` descending, with ties broken at RANDOM.
+
+    Necessary, not fastidious. Identical covariate vectors give identical
+    predicted uplift, and those tied blocks are large (41% of rows sit in
+    blocks of 1,000+; the largest is 60,049 rows and is 100% treated, because
+    a block is usually one user's repeated impressions).
+
+    Ordering ties by position therefore sorts by treatment arm inside a block,
+    which can hand a whole decile zero control units and makes every Qini and
+    decile number meaningless. A seeded random tiebreak restores the
+    treated/control mix within each bucket while staying reproducible.
+    """
+    rng = np.random.default_rng(seed)
+    return np.lexsort((rng.random(len(score)), -np.asarray(score, dtype=np.float64)))
+
+
 def transformed_outcome(y: np.ndarray, t: np.ndarray, p: float | np.ndarray) -> np.ndarray:
     """Athey-Imbens transformed outcome:  Z = Y (T - p) / (p (1 - p)).
 
@@ -46,12 +63,16 @@ def transformed_outcome(y: np.ndarray, t: np.ndarray, p: float | np.ndarray) -> 
 class QiniResult:
     x: np.ndarray               # cumulative share of population targeted
     y: np.ndarray               # incremental positive outcomes gained
-    qini_coefficient: float     # area between the curve and random targeting
-    auuc: float                 # area under the uplift curve, normalised
+    qini_coefficient: float     # (area_model - area_random) / |area_random|
+    auuc: float                 # area under the uplift curve, per unit
+    area_model: float
+    area_random: float
     n: int
 
     def as_dict(self) -> dict:
-        return {"qini_coefficient": self.qini_coefficient, "auuc": self.auuc, "n": self.n}
+        return {"qini_coefficient": self.qini_coefficient, "auuc": self.auuc,
+                "area_model": self.area_model, "area_random": self.area_random,
+                "n": self.n}
 
 
 def qini_curve(
@@ -69,15 +90,18 @@ def qini_curve(
     top k rather than globally, which is what keeps the curve honest when a
     score happens to correlate with treatment assignment.
 
-    The Qini coefficient normalises the area between this curve and the
-    diagonal (random targeting) by the same area for the overall effect, so
-    0 is random and higher is better.
+    Reported `qini_coefficient` is (area_model - area_random) / |area_random|:
+    the proportional gain over random targeting, so 0 is random and 1.0 means
+    twice the area. Note that some papers instead normalise by the area of a
+    *perfect* ranking, which yields smaller numbers on the same curve -- the
+    raw `area_model` and `area_random` are returned so either convention can
+    be recomputed rather than guessed at.
     """
     y = np.asarray(y, dtype=np.float64)
     t = np.asarray(t, dtype=np.float64)
     n = y.size
 
-    order = np.argsort(-np.asarray(score, dtype=np.float64), kind="stable")
+    order = rank_desc(score)
     ys, ts = y[order], t[order]
 
     nt = np.cumsum(ts)
@@ -100,7 +124,8 @@ def qini_curve(
     auuc = float(area_model / n)
 
     idx = np.unique(np.linspace(0, n - 1, n_points).astype(np.int64))
-    return QiniResult(x=depth[idx], y=q[idx], qini_coefficient=qini_coef, auuc=auuc, n=n)
+    return QiniResult(x=depth[idx], y=q[idx], qini_coefficient=qini_coef, auuc=auuc,
+                      area_model=float(area_model), area_random=float(area_random), n=n)
 
 
 def uplift_by_decile(
@@ -118,8 +143,9 @@ def uplift_by_decile(
     t = np.asarray(t)
     score = np.asarray(score, dtype=np.float64)
 
-    # Rank-based binning: robust to the score's scale and to heavy ties.
-    order = np.argsort(-score, kind="stable")
+    # Rank-based binning: robust to the score's scale, with random tiebreaks
+    # so a large single-arm tie block cannot capture an entire bin.
+    order = rank_desc(score)
     rank = np.empty(len(score), dtype=np.int64)
     rank[order] = np.arange(len(score))
     b = np.minimum((rank * n_bins) // len(score), n_bins - 1)
@@ -167,7 +193,7 @@ def precision_at_k(
     overall = stats.diff_in_means(y, t)
     total_incremental = overall.estimate * n
 
-    order = np.argsort(-np.asarray(score, dtype=np.float64), kind="stable")
+    order = rank_desc(score)
     rows = []
     for k in ks:
         top = order[: max(1, int(round(k * n)))]

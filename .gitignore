@@ -16,3 +16,6 @@ data/processed/*
 
 # Reports: keep the committed results, ignore scratch
 reports/scratch/
+
+# Run logs
+logs/

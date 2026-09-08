@@ -41,11 +41,23 @@ def _expit(z: np.ndarray) -> np.ndarray:
 
 
 def rank_pct(x: np.ndarray) -> np.ndarray:
-    """Fractional ranks in [0, 1). Ties broken arbitrarily but deterministically."""
-    order = np.argsort(x, kind="stable")
-    ranks = np.empty(len(x), dtype=np.float64)
-    ranks[order] = np.arange(len(x), dtype=np.float64)
-    return ranks / len(x)
+    """Fractional ranks in [0, 1], with TIES GIVEN THEIR AVERAGE RANK.
+
+    Averaging ties is not a cosmetic choice here. The prognostic score has only
+    3.59M distinct values across 14.0M rows -- 41% of rows sit in tie blocks of
+    more than 1,000, and the largest single block is 60,049 rows -- because
+    identical covariate vectors produce identical predictions.
+
+    Breaking those ties by position would make the selection probability depend
+    on a row's location in the file as well as on X. Unconfoundedness given X
+    would then hold only if file position were ignorable, which is an
+    assumption nobody can check. Averaging makes the keep probability an exact
+    function of X, so the identifying assumption Step 3 relies on is true by
+    construction rather than by hope.
+    """
+    from scipy.stats import rankdata
+
+    return (rankdata(x, method="average") - 0.5) / len(x)
 
 
 @dataclass

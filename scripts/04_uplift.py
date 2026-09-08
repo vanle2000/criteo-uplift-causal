@@ -100,7 +100,7 @@ def segment_profiles(Xte, score, y, t, n_bins: int = 10) -> list[dict]:
     so a downstream reader (or a language model) sees "unusually high on f9"
     rather than an uninterpretable raw magnitude.
     """
-    order = np.argsort(-score, kind="stable")
+    order = U.rank_desc(score)
     rank = np.empty(len(score), dtype=np.int64)
     rank[order] = np.arange(len(score))
     b = np.minimum((rank * n_bins) // len(score), n_bins - 1)
@@ -230,9 +230,10 @@ def main() -> int:
     yte, tte = y[is_test], t[is_test]
 
     evald, curves, deciles, profiles = {}, {}, {}, {}
-    for name, (fn, secs) in models.items():
+    for name, entry in models.items():
         if name.startswith("_"):
             continue
+        fn, secs = entry
         s = np.asarray(fn(Xte), dtype=np.float64).ravel()
         q = U.qini_curve(yte, tte, s)
         pk = U.precision_at_k(yte, tte, s)
