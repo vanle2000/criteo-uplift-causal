@@ -1,0 +1,46 @@
+name: scheduled-retrain
+
+on:
+  schedule:
+    # 03:00 UTC every Monday. Weekly because the promotion gate compares
+    # against the incumbent, and daily retrains on a slow-moving audience
+    # mostly measure holdout noise.
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      min_qini:
+        description: "Promotion gate on holdout Qini"
+        default: "0.30"
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[serve]"
+
+      - name: Fetch and ingest the dataset
+        run: |
+          curl -L --retry 3 -o data/raw/criteo-research-uplift-v2.1.csv.gz \
+            https://huggingface.co/datasets/criteo/criteo-uplift/resolve/main/criteo-research-uplift-v2.1.csv.gz
+          python scripts/00_ingest.py
+
+      - name: Retrain, evaluate, promote only if the gate passes
+        run: python scripts/retrain.py --min-qini "${{ inputs.min_qini || '0.30' }}"
+
+      - name: Drift check against the training reference
+        run: python scripts/monitor_drift.py --sample 200000
+        continue-on-error: true   # drift is a signal to look, not a build break
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: retrain-artifacts
+          path: |
+            models/registry.jsonl
+            models/current/metadata.json
+            reports/drift_report.json

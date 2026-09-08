@@ -1,0 +1,116 @@
+{
+  "checked_at": "2026-09-08T10:00:03-0700",
+  "model_id": "uplift-conversion-20260908-095844",
+  "n_batch": 50000,
+  "reference_kind": "binned training distribution stored in the artefact",
+  "features": {
+    "f0": {
+      "psi": 0.007670976482622317,
+      "band": "stable",
+      "batch_mean": 19.64115333557129,
+      "reference_mean": 19.219146728515625
+    },
+    "f1": {
+      "psi": 4.301030105163742e-05,
+      "band": "stable",
+      "batch_mean": 10.06977653503418,
+      "reference_mean": 10.069398880004883
+    },
+    "f2": {
+      "psi": 0.006810656008252166,
+      "band": "stable",
+      "batch_mean": 8.446712493896484,
+      "reference_mean": 8.47094440460205
+    },
+    "f3": {
+      "psi": 0.000494187415295182,
+      "band": "stable",
+      "batch_mean": 4.177597522735596,
+      "reference_mean": 4.20734167098999
+    },
+    "f4": {
+      "psi": 0.00011976849181129675,
+      "band": "stable",
+      "batch_mean": 10.338220596313477,
+      "reference_mean": 10.335515022277832
+    },
+    "f5": {
+      "psi": 0.0002443520808908088,
+      "band": "stable",
+      "batch_mean": 4.02938175201416,
+      "reference_mean": 4.033565998077393
+    },
+    "f6": {
+      "psi": 0.004611004270996397,
+      "band": "stable",
+      "batch_mean": -4.161910057067871,
+      "reference_mean": -3.901223659515381
+    },
+    "f7": {
+      "psi": 0.00024187735870146134,
+      "band": "stable",
+      "batch_mean": 5.104325771331787,
+      "reference_mean": 5.086317539215088
+    },
+    "f8": {
+      "psi": 0.005457387152541221,
+      "band": "stable",
+      "batch_mean": 3.933445930480957,
+      "reference_mean": 3.9340052604675293
+    },
+    "f9": {
+      "psi": 0.0007703029102218296,
+      "band": "stable",
+      "batch_mean": 16.03150749206543,
+      "reference_mean": 15.863078117370605
+    },
+    "f10": {
+      "psi": 0.00013471906233059253,
+      "band": "stable",
+      "batch_mean": 5.333390235900879,
+      "reference_mean": 5.331496238708496
+    },
+    "f11": {
+      "psi": 1.8465853070068006e-05,
+      "band": "stable",
+      "batch_mean": -0.17088386416435242,
+      "reference_mean": -0.1708383858203888
+    }
+  },
+  "prediction": {
+    "score_mean": 0.0009575459846884473,
+    "score_p50": 6.725157713644219e-05,
+    "score_p99": 0.021613322706303242,
+    "decile_shares": [
+      0.10804,
+      0.10638,
+      0.12002,
+      0.66156,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.004
+    ],
+    "expected_decile_shares": [
+      0.10013239929360057,
+      0.10013133909688396,
+      0.10943311956233537,
+      0.6863275971229346,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.003975544924245571
+    ],
+    "decile_psi": 0.0028674013620102025,
+    "max_decile_share_deviation": 0.024767597122934526,
+    "top3_share": 0.33444,
+    "expected_top3_share": 0.30969685795281987,
+    "band": "stable"
+  },
+  "alerts": [],
+  "status": "OK"
+}

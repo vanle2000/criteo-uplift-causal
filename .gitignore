@@ -19,3 +19,8 @@ reports/scratch/
 
 # Run logs
 logs/
+
+# Model artifacts: keep the promoted model and the registry, not every staged copy
+models/*
+!models/current/
+!models/registry.jsonl

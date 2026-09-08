@@ -1,0 +1,11 @@
+data/
+reports/
+logs/
+notebooks/
+tests/
+.venv/
+.git/
+.pytest_cache/
+__pycache__/
+models/*
+!models/current/
