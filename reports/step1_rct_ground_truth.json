@@ -1,0 +1,253 @@
+{
+  "step": 1,
+  "description": "Ground-truth ATE on the full randomised Criteo sample",
+  "source_manifest": {
+    "source_url": "https://huggingface.co/datasets/criteo/criteo-uplift/resolve/main/criteo-research-uplift-v2.1.csv.gz",
+    "source_file": "criteo-research-uplift-v2.1.csv.gz",
+    "source_bytes": 311422618,
+    "source_sha256": "2716e1bf0fd157a93b5bf86924d9088419dfbac2022c6cd90030220634f616dc",
+    "output": "data\\processed\\criteo_uplift.parquet",
+    "output_bytes": 169336498,
+    "n_rows": 13979592,
+    "n_chunks": 7,
+    "columns": [
+      "row_id",
+      "f0",
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "treatment",
+      "conversion",
+      "visit",
+      "exposure"
+    ],
+    "binary_rates": {
+      "treatment": 0.8500001287591226,
+      "conversion": 0.002916680257907384,
+      "visit": 0.046992000911042324,
+      "exposure": 0.03063122299992732
+    },
+    "binary_counts": {
+      "treatment": 11882655,
+      "conversion": 40774,
+      "visit": 656929,
+      "exposure": 428212
+    },
+    "feature_means": {
+      "f0": 19.620297373723446,
+      "f1": 10.069976277704928,
+      "f2": 8.446582453585986,
+      "f3": 4.178923030253562,
+      "f4": 10.33883728850496,
+      "f5": 4.028512754967056,
+      "f6": -4.155355516327899,
+      "f7": 5.101764687424199,
+      "f8": 3.933580862525007,
+      "f9": 16.027638209005907,
+      "f10": 5.333395672472514,
+      "f11": -0.1709672489993962
+    },
+    "feature_min": {
+      "f0": 12.616364479064941,
+      "f1": 10.059654235839844,
+      "f2": 8.214383125305176,
+      "f3": -8.39838695526123,
+      "f4": 10.280525207519531,
+      "f5": -9.01189136505127,
+      "f6": -31.42978286743164,
+      "f7": 4.83381462097168,
+      "f8": 3.6351065635681152,
+      "f9": 13.190055847167969,
+      "f10": 5.300374984741211,
+      "f11": -1.3839406967163086
+    },
+    "feature_max": {
+      "f0": 26.745254516601562,
+      "f1": 16.344186782836914,
+      "f2": 9.051961898803711,
+      "f3": 4.679881572723389,
+      "f4": 21.12350845336914,
+      "f5": 4.115453243255615,
+      "f6": 0.29444271326065063,
+      "f7": 11.998400688171387,
+      "f8": 3.971858024597168,
+      "f9": 75.2950210571289,
+      "f10": 6.473917007446289,
+      "f11": -0.16867922246456146
+    },
+    "ingest_seconds": 24.0,
+    "ingested_at": "2026-09-08T08:37:20-0700"
+  },
+  "sample": {
+    "n_rows": 13979592,
+    "n_treated": 11882655,
+    "n_control": 2096937,
+    "treated_share": 0.8500001287591226,
+    "outcome_base_rates": {
+      "visit": {
+        "overall": 0.046992000911042324,
+        "treated": 0.048543360048743316,
+        "control": 0.03820095691954503,
+        "n_positive": 656929
+      },
+      "conversion": {
+        "overall": 0.002916680257907384,
+        "treated": 0.0030894610674129645,
+        "control": 0.0019375880152813366,
+        "n_positive": 40774
+      }
+    },
+    "exposure": {
+      "overall": 0.03063122299992732,
+      "given_treated": 0.036036727482199896,
+      "given_control": 0.0,
+      "one_sided_compliance": true
+    }
+  },
+  "balance": {
+    "max_abs_smd": 0.04883634026324019,
+    "mean_abs_smd": 0.020694569175914553,
+    "n_covariates_above_0.10": 0,
+    "worst_covariate": "f3",
+    "variance_ratio_min": 0.9893749495350633,
+    "variance_ratio_max": 1.3164475024982383
+  },
+  "dependence": {
+    "n_rows": 13979592,
+    "n_clusters": 9171600,
+    "rows_per_cluster_mean": 1.524226089231977,
+    "rows_per_cluster_max": 521125,
+    "impressions_per_treated_unit": 1.118092758561757,
+    "impressions_per_control_unit": 1.0140829096629485,
+    "share_clusters_mixed_arms": 0.033817000305290223,
+    "treated_share_row_level": 0.8500001287591226,
+    "treated_share_cluster_level": 0.8325532077282044
+  },
+  "ate": {
+    "visit": {
+      "name": "ITT / diff-in-means (visit)",
+      "estimate": 0.010342403129198284,
+      "se": 0.00014631645066032718,
+      "n_treated": 11882655,
+      "n_control": 2096937,
+      "mean_treated": 0.048543360048743316,
+      "mean_control": 0.03820095691954503,
+      "relative_lift": 0.27073675539019604,
+      "relative_lift_se": 0.004695919925528328,
+      "ci_low": 0.010055628155558312,
+      "ci_high": 0.010629178102838257,
+      "relative_lift_ci_low": 0.2615329214618765,
+      "relative_lift_ci_high": 0.27994058931851556,
+      "z": 70.68516959318617,
+      "outcome": "visit",
+      "cluster_robust": {
+        "se": 0.00051398686624387,
+        "ci_low": 0.009335007382833693,
+        "ci_high": 0.011349798875562875,
+        "design_effect": 3.5128440030102124
+      },
+      "lin_adjusted": {
+        "estimate": 0.007733822440301648,
+        "se": 0.00013125541434961114,
+        "ci_low": 0.007476566555400528,
+        "ci_high": 0.007991078325202768,
+        "se_ratio_vs_unadjusted": 0.8970653248985642,
+        "seconds": 8.1
+      },
+      "cace": {
+        "estimate": 0.28699618005843747,
+        "se": 0.004082973443645471,
+        "ci_low": 0.27899369915905886,
+        "ci_high": 0.2949986609578161,
+        "first_stage": 0.036036727482199896,
+        "first_stage_se": 5.4068732739168384e-05
+      }
+    },
+    "conversion": {
+      "name": "ITT / diff-in-means (conversion)",
+      "estimate": 0.0011518730521316279,
+      "se": 3.4371690289992735e-05,
+      "n_treated": 11882655,
+      "n_control": 2096937,
+      "mean_treated": 0.0030894610674129645,
+      "mean_control": 0.0019375880152813366,
+      "relative_lift": 0.5944881177252619,
+      "relative_lift_se": 0.026335732292959244,
+      "ci_low": 0.001084505777075477,
+      "ci_high": 0.0012192403271877787,
+      "relative_lift_ci_low": 0.5428710309245733,
+      "relative_lift_ci_high": 0.6461052045259504,
+      "z": 33.51226088718116,
+      "outcome": "conversion",
+      "cluster_robust": {
+        "se": 6.899074412860813e-05,
+        "ci_low": 0.0010166536783729379,
+        "ci_high": 0.001287092425890318,
+        "design_effect": 2.0071967234237147
+      },
+      "lin_adjusted": {
+        "estimate": 0.0010016560242024019,
+        "se": 3.3975884904788415e-05,
+        "ci_low": 0.0009350645134461385,
+        "ci_high": 0.0010682475349586653,
+        "se_ratio_vs_unadjusted": 0.9884845527855941,
+        "seconds": 8.5
+      },
+      "cace": {
+        "estimate": 0.031963863885825596,
+        "se": 0.0009550010306962981,
+        "ci_low": 0.03009209626046222,
+        "ci_high": 0.03383563151118897,
+        "first_stage": 0.036036727482199896,
+        "first_stage_se": 5.4068732739168384e-05
+      }
+    }
+  },
+  "user_level_ate": {
+    "visit": {
+      "name": "user-level ATE (visit)",
+      "estimate": 0.012205453299263369,
+      "se": 0.00021354596901361792,
+      "n_treated": 7635845,
+      "n_control": 1225599,
+      "mean_treated": 0.06133789112490345,
+      "mean_control": 0.04913243782564008,
+      "relative_lift": 0.24841945239065422,
+      "relative_lift_se": 0.005263576376736168,
+      "ci_low": 0.011786910890952972,
+      "ci_high": 0.012623995707573766,
+      "relative_lift_ci_low": 0.2381030322623755,
+      "relative_lift_ci_high": 0.25873587251893293,
+      "z": 57.15609316177269,
+      "n_clusters_used": 8861444,
+      "n_clusters_dropped_mixed": 310156
+    },
+    "conversion": {
+      "name": "user-level ATE (conversion)",
+      "estimate": 0.001464500014865915,
+      "se": 5.566428179786395e-05,
+      "n_treated": 7635845,
+      "n_control": 1225599,
+      "mean_treated": 0.004546530379881987,
+      "mean_control": 0.003082030365016072,
+      "relative_lift": 0.4751737787821173,
+      "relative_lift_se": 0.025229840324904287,
+      "ci_low": 0.0013554000273168132,
+      "ci_high": 0.0015736000024150168,
+      "relative_lift_ci_low": 0.42572420040960857,
+      "relative_lift_ci_high": 0.524623357154626,
+      "z": 26.309510651444594,
+      "n_clusters_used": 8861444,
+      "n_clusters_dropped_mixed": 310156
+    }
+  },
+  "runtime_seconds": 39.5
+}
