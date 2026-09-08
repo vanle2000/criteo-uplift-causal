@@ -38,6 +38,7 @@ estimator used. Full tables: [`reports/step3_recovery_inflate.md`](reports/step3
 - [Step 1 — ground truth](#step-1--ground-truth)
 - [Step 2 — breaking randomisation on purpose](#step-2--breaking-randomisation-on-purpose)
 - [Step 3 — recovery, and what balance diagnostics do not tell you](#step-3--recovery-and-what-balance-diagnostics-do-not-tell-you)
+- [Step 3, part two: sensitivity when there is no answer key](#step-3-part-two-sensitivity-when-there-is-no-answer-key)
 - [Step 4 — uplift modelling, including a result I did not want](#step-4--uplift-modelling-including-a-result-i-did-not-want)
 - [Step 5 — the GenAI layer (built, not run)](#step-5--the-genai-layer-built-not-run)
 - [Step 6 — deployment](#step-6--deployment)
@@ -53,11 +54,12 @@ estimator used. Full tables: [`reports/step3_recovery_inflate.md`](reports/step3
 | Competency | Where to look |
 |---|---|
 | **Causal inference** | PSM, IPW, AIPW, g-computation, DiD, placebo tests, balance diagnostics — all scored against RCT ground truth: [`src/uplift/estimators.py`](src/uplift/estimators.py), [`src/uplift/did.py`](src/uplift/did.py) |
+| **Sensitivity analysis** | Rosenbaum bounds and E-values, and a demonstration that a *high* E-value can mean a *worse* estimate: [`src/uplift/sensitivity.py`](src/uplift/sensitivity.py) |
 | **Knowing when a method is lying** | Effective sample size reported beside every weighted estimate; matching's understated intervals called out in the code that produces them |
 | **Scale** | 14.0M rows end to end, no subsampling; chunked normal equations instead of a 3 GB design matrix ([`stats.lin_ate`](src/uplift/stats.py)) |
 | **Ranking / propensity** | Cross-fitted propensity scores, uplift ranking, Qini, Precision@K, next-best-action: [`src/uplift/uplift.py`](src/uplift/uplift.py) |
 | **GenAI engineering** | Rubric, LLM-as-judge, deterministic rule scoring, **negative controls**, weighted-kappa agreement: [`src/uplift/genai/`](src/uplift/genai/) — built, not yet run (see below) |
-| **Production** | FastAPI + Docker, gated retrain, drift monitor, 55 tests: [`src/uplift/serving/`](src/uplift/serving/) |
+| **Production** | FastAPI + Docker, gated retrain, drift monitor, 70 tests: [`src/uplift/serving/`](src/uplift/serving/) |
 
 ---
 
@@ -207,6 +209,48 @@ scenarios on `visit`) and poorly on the rare one (+22%, −169% on `conversion`)
 because the synthetic pre-period injects Bernoulli noise of order √p while the
 effect itself is ~0.001. The `violated` variant is biased by 80–165% by
 construction, which is the point of including it.
+
+---
+
+## Step 3, part two: sensitivity when there is no answer key
+
+Steps 1–3 ask *which estimators recover a known answer*. That question only
+exists because randomisation supplied the answer. On real observational data
+you are left with the contrapositive: **how strong would an unmeasured
+confounder have to be to explain this away?**
+
+Rosenbaum bounds on the 5.95M matched pairs, plus E-values for every estimate
+([`reports/step3_sensitivity_inflate.md`](reports/step3_sensitivity_inflate.md)):
+
+| outcome | discordant pairs | Γ\* | target risk ratio | target E-value |
+|---|---|---|---|---|
+| `conversion` | 55,858 | **1.41** | 1.419 | 2.19 |
+| `visit` | 667,295 | **1.31** | 1.187 | 1.66 |
+
+Γ\* = 1.41 means a hidden confounder shifting the odds of treatment by only
+41% between two units identical on all 12 covariates would be enough to end
+significance. That is *not* robust, and it is the honest verdict on the matched
+analysis — consistent with PSM's 11–20% bias in Step 3.
+
+Now the trap. E-values for the conversion estimates:
+
+| estimator | implied RR | E-value | actual bias vs truth |
+|---|---|---|---|
+| naive (no adjustment) | 2.412 | **4.26** | **+237%** |
+| AIPW (GBM PS) | 1.439 | 2.23 | +4.6% |
+| *RCT-derived truth* | *1.419* | *2.19* | *—* |
+| IPW (GBM PS) | 1.033 | 1.22 | −92% |
+
+**The most biased estimator has the largest E-value.** Reported on its own,
+"you would need a confounder with RR 4.26 to overturn this" sounds like
+strength — but the naive estimate is 237% wrong, and its big E-value only
+reflects that it is claiming a big effect. An E-value measures *the size of the
+claim*, never *whether the claim is right*. AIPW's E-value (2.23) lands almost
+exactly on the truth's (2.19), which is what a well-adjusted estimate looks
+like.
+
+I would not have seen this without the RCT to check against, which is the whole
+argument for building the project this way round.
 
 ---
 
@@ -377,6 +421,7 @@ python scripts/00_ingest.py
 python scripts/01_rct_ground_truth.py      # ~40s
 python scripts/02_confound.py              # ~80s (+80s first run to fit the prognostic score)
 python scripts/03_recover.py --direction inflate   # ~23 min, the expensive one
+python scripts/03_sensitivity.py          # ~2 min, Rosenbaum bounds + E-values
 python scripts/04_uplift.py                # ~5 min
 # python scripts/05_genai.py --backend anthropic   # needs credentials
 
@@ -388,7 +433,7 @@ docker build -t criteo-uplift . && docker run -p 8000:8000 criteo-uplift
 `scripts/03_recover.py --sample 300000` runs the whole estimator suite in ~2
 minutes if you want to see it work before committing 23.
 
-**Tests: 55, all passing,** and they need no dataset — the causal tests are
+**Tests: 70, all passing,** and they need no dataset — the causal tests are
 self-contained simulations with known ground truth:
 
 ```bash
@@ -412,12 +457,13 @@ src/uplift/
   confound.py      Step 2: prognostic score, selection rule, re-standardised target
   estimators.py    Step 3: propensity, IPW, AIPW, g-computation, PSM, balance
   did.py           synthetic pre-period, DiD, placebo tests
+  sensitivity.py   Rosenbaum bounds, E-values
   uplift.py        Step 4: transformed outcome, Qini, deciles, Precision@K
   genai/           Step 5: provider, rubric, judge, agreement statistics
   serving/         Step 6: model artefact + FastAPI app
 scripts/           00..05 pipeline, retrain, monitor_drift
 reports/           committed results: json, markdown, figures
-tests/             55 tests
+tests/             70 tests
 ```
 
 ---
@@ -429,10 +475,6 @@ tests/             55 tests
 - **Hyperparameter search.** LightGBM defaults with mild regularisation
   throughout. The conclusions are about estimator structure, not tuning, and
   every method got the same budget.
-- **Sensitivity analysis (Rosenbaum bounds, E-values).** The right next
-  addition, and the honest gap in Step 3: I show *which* methods recover a known
-  answer, not *how much* unmeasured confounding would be needed to overturn a
-  conclusion when the answer is unknown.
 - **EconML's causal forests and DR-learner.** Its compiled extensions are
   blocked by an Application Control policy on my machine
   (`ImportError: DLL load failed while importing _criterion`). `econml.metalearners`

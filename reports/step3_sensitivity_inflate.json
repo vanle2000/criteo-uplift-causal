@@ -1,0 +1,313 @@
+{
+  "step": 3, "part": "sensitivity",
+  "direction": "inflate",
+  "outcomes": {
+    "conversion": {
+      "target_ate": 0.001602713084393524,
+      "baseline_risk": 0.0038216575162347824,
+      "baseline_source": "mean(mu_0), cross-fitted outcome model",
+      "observed_control_rate_in_subsample": 0.0002967554734898444,
+      "target_risk_ratio": 1.4193764296211888,
+      "target_e_value": 2.190902851296432,
+      "matched_pairs": 5952926,
+      "n_discordant": 55858,
+      "n_plus": 32851,
+      "n_minus": 23007,
+      "gamma_critical": 1.4071121215820312,
+      "rosenbaum": [
+        {
+          "gamma": 1.0,
+          "p_upper": 0.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.1,
+          "p_upper": 4.831685338555671e-205,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.25,
+          "p_upper": 1.1546420741600986e-54,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.5,
+          "p_upper": 0.9999999949347887,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 1.75,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 2.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 2.5,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 3.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 4.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 5.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 7.5,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 10.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        }
+      ],
+      "e_values": [
+        {
+          "method": "naive (no adjustment)",
+          "estimate": 0.00539664963060172,
+          "risk_ratio": 2.4121227785787225,
+          "e_value_point": 4.257715778229407,
+          "e_value_ci": 3.8422680328300194,
+          "bias_pct_vs_target": 2.3671963392273945
+        },
+        {
+          "method": "IPW (stabilized, lgbm PS)",
+          "estimate": 0.0001271531700153634,
+          "risk_ratio": 1.0332717333971462,
+          "e_value_point": 1.218686785753736,
+          "e_value_ci": 1.0,
+          "bias_pct_vs_target": -0.9206637973736398
+        },
+        {
+          "method": "AIPW doubly-robust (lgbm PS)",
+          "estimate": 0.001676520266900942,
+          "risk_ratio": 1.4386893016391231,
+          "e_value_point": 2.233130995542297,
+          "e_value_ci": 1.675971249117965,
+          "bias_pct_vs_target": 0.046051400731745476
+        },
+        {
+          "method": "PSM 1:1 NN (lgbm PS)",
+          "estimate": 0.001433335908985023,
+          "risk_ratio": 1.3750560857157055,
+          "e_value_point": 2.093194758360545,
+          "e_value_ci": 2.0544818613128775,
+          "bias_pct_vs_target": -0.10568153280697415
+        },
+        {
+          "method": "IPW (stabilized, logit PS)",
+          "estimate": -0.0029405088503436433,
+          "risk_ratio": null,
+          "e_value_point": null,
+          "e_value_ci": null,
+          "bias_pct_vs_target": -2.8347069597028645
+        },
+        {
+          "method": "AIPW doubly-robust (logit PS)",
+          "estimate": 0.010384680760381612,
+          "risk_ratio": 3.717323757104464,
+          "e_value_point": 6.895557882846113,
+          "e_value_ci": 1.0,
+          "bias_pct_vs_target": 5.479438435676861
+        },
+        {
+          "method": "PSM 1:1 NN (logit PS)",
+          "estimate": 0.0027424718172065618,
+          "risk_ratio": 1.7176131836922246,
+          "e_value_point": 2.827830218825948,
+          "e_value_ci": 2.792964282801306,
+          "bias_pct_vs_target": 0.7111433380755914
+        },
+        {
+          "method": "g-computation (outcome regression)",
+          "estimate": 0.0010612276709939018,
+          "risk_ratio": 1.2776878007738006,
+          "e_value_point": 1.8733372912229997,
+          "e_value_ci": 1.7845221919424161,
+          "bias_pct_vs_target": -0.3378554893401419
+        }
+      ]
+    },
+    "visit": {
+      "target_ate": 0.011848961780980627,
+      "baseline_risk": 0.0632909390583351,
+      "baseline_source": "mean(mu_0), cross-fitted outcome model",
+      "observed_control_rate_in_subsample": 0.006294042280589366,
+      "target_risk_ratio": 1.1872141882751885,
+      "target_e_value": 1.6586623196393147,
+      "matched_pairs": 5952926,
+      "n_discordant": 667295,
+      "n_plus": 379464,
+      "n_minus": 287831,
+      "gamma_critical": 1.3126983642578125,
+      "rosenbaum": [
+        {
+          "gamma": 1.0,
+          "p_upper": 0.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.1,
+          "p_upper": 0.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.25,
+          "p_upper": 1.947727611752354e-103,
+          "p_lower": 0.0,
+          "significant_at_alpha": true
+        },
+        {
+          "gamma": 1.5,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 1.75,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 2.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 2.5,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 3.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 4.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 5.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 7.5,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        },
+        {
+          "gamma": 10.0,
+          "p_upper": 1.0,
+          "p_lower": 0.0,
+          "significant_at_alpha": false
+        }
+      ],
+      "e_values": [
+        {
+          "method": "naive (no adjustment)",
+          "estimate": 0.08237327122776301,
+          "risk_ratio": 2.301501801890469,
+          "e_value_point": 4.032226720014261,
+          "e_value_ci": 3.6545921176162426,
+          "bias_pct_vs_target": 5.951939988530012
+        },
+        {
+          "method": "IPW (stabilized, lgbm PS)",
+          "estimate": 0.00608104448067151,
+          "risk_ratio": 1.0960808066865089,
+          "e_value_point": 1.4205994164765163,
+          "e_value_ci": 1.3116470419492103,
+          "bias_pct_vs_target": -0.48678672502492965
+        },
+        {
+          "method": "AIPW doubly-robust (lgbm PS)",
+          "estimate": 0.010849403276992018,
+          "risk_ratio": 1.1714211139605963,
+          "e_value_point": 1.619535287215681,
+          "e_value_ci": 1.5320654214263416,
+          "bias_pct_vs_target": -0.08435831952745862
+        },
+        {
+          "method": "PSM 1:1 NN (lgbm PS)",
+          "estimate": 0.013356369733944684,
+          "risk_ratio": 1.2110313092626759,
+          "e_value_point": 1.7165661970318535,
+          "e_value_ci": 1.7078035184549218,
+          "bias_pct_vs_target": 0.12721856824482922
+        },
+        {
+          "method": "IPW (stabilized, logit PS)",
+          "estimate": -0.1586009211161704,
+          "risk_ratio": null,
+          "e_value_point": null,
+          "e_value_ci": null,
+          "bias_pct_vs_target": -14.385216700652107
+        },
+        {
+          "method": "AIPW doubly-robust (logit PS)",
+          "estimate": 0.003915327733949413,
+          "risk_ratio": 1.061862373859561,
+          "e_value_point": 1.3181616660144575,
+          "e_value_ci": 1.0,
+          "bias_pct_vs_target": -0.669563645632303
+        },
+        {
+          "method": "PSM 1:1 NN (logit PS)",
+          "estimate": 0.026826811700091595,
+          "risk_ratio": 1.423864965494751,
+          "e_value_point": 2.200734629253491,
+          "e_value_ci": 2.192914671709385,
+          "bias_pct_vs_target": 1.2640643286699327
+        },
+        {
+          "method": "g-computation (outcome regression)",
+          "estimate": 0.01313023260937068,
+          "risk_ratio": 1.2074583313935126,
+          "e_value_point": 1.7079553749992595,
+          "e_value_ci": 1.6456791408741591,
+          "bias_pct_vs_target": 0.10813359449320574
+        }
+      ]
+    }
+  },
+  "runtime_seconds": 129.8
+}
