@@ -23,6 +23,30 @@ import time
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 
+
+def _load_dotenv() -> None:
+    """Read `.env` from the project root, without overriding a real env var.
+
+    Credentials go in a gitignored file rather than the shell, so a key never
+    has to be pasted into a terminal, a command history, or a transcript.
+    Parsed by hand to keep the import graph free of a dependency that would
+    otherwise be needed just to read seven lines.
+    """
+    root = Path(__file__).resolve().parents[3]
+    env = root / ".env"
+    if not env.exists():
+        return
+    for line in env.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+_load_dotenv()
+
 # Prices are OPERATOR-SUPPLIED, in USD per million tokens, and are only as
 # current as whoever last edited this table. They are kept here rather than
 # inferred so that a wrong cost number is a visible config error rather than a
