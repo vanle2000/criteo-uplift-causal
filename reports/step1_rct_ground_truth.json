@@ -160,7 +160,7 @@
         "ci_low": 0.007476566555400528,
         "ci_high": 0.007991078325202768,
         "se_ratio_vs_unadjusted": 0.8970653248985642,
-        "seconds": 8.1
+        "seconds": 11.0
       },
       "cace": {
         "estimate": 0.28699618005843747,
@@ -199,7 +199,7 @@
         "ci_low": 0.0009350645134461385,
         "ci_high": 0.0010682475349586653,
         "se_ratio_vs_unadjusted": 0.9884845527855941,
-        "seconds": 8.5
+        "seconds": 8.2
       },
       "cace": {
         "estimate": 0.031963863885825596,
@@ -249,5 +249,5 @@
       "n_clusters_dropped_mixed": 310156
     }
   },
-  "runtime_seconds": 39.5
+  "runtime_seconds": 35.3
 }

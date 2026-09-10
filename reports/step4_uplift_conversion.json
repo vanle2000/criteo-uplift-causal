@@ -11,7 +11,7 @@
       "area_model": 2124.0212054265503,
       "area_random": 2117.007030438069,
       "n": 3604159,
-      "fit_seconds": 66.45674059999874,
+      "fit_seconds": 57.155398400034755,
       "precision_at_k": [
         {
           "k": 0.05,
@@ -61,7 +61,7 @@
       "area_model": 3512.129746031893,
       "area_random": 2117.007030438069,
       "n": 3604159,
-      "fit_seconds": 48.10218280000845,
+      "fit_seconds": 38.888416299945675,
       "precision_at_k": [
         {
           "k": 0.05,
@@ -111,7 +111,7 @@
       "area_model": 3838.6940214502843,
       "area_random": 2117.007030438069,
       "n": 3604159,
-      "fit_seconds": 66.73996829998214,
+      "fit_seconds": 54.46034790005069,
       "precision_at_k": [
         {
           "k": 0.05,
@@ -626,5 +626,5 @@
       "observed_rate": 0.02878071112467572
     }
   ],
-  "runtime_seconds": 275.7
+  "runtime_seconds": 238.8
 }

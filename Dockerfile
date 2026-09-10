@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
-COPY requirements-serve.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements-serve.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
 FROM python:3.12-slim AS runtime

@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-09-08T14:57:11-0700",
+  "checked_at": "2026-09-10T07:34:33-0700",
   "model_id": "uplift-conversion-20260908-095844",
   "n_batch": 50000,
   "reference_kind": "binned training distribution stored in the artefact",

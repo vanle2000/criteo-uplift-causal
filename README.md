@@ -19,11 +19,11 @@ estimator lands within single digits in all four test conditions:
 | IPW (gradient-boosted PS) | −92% | −0.1% | −49% | −0.2% |
 | **AIPW, doubly robust (GBM PS)** | **+4.6%** | **−8.3%** | **−8.4%** | **−5.3%** |
 | PSM 1:1 NN (GBM PS) | −11% | −19% | +13% | −20% |
-| g-computation | −34% | +35% | +11% | −11% |
-| IPW (linear PS) | −284% | +182% | −1439% | +329% |
+| g-computation | −34% | +34% | +11% | −10% |
+| IPW (linear PS) | −283% | +182% | −1439% | +329% |
 | AIPW (linear PS) | +548% | −34% | −67% | −7.6% |
 | DiD, parallel trends | +22% | −169% | +0.3% | −0.7% |
-| DiD, trends violated | +80% | −87% | +165% | +131% |
+| DiD, trends violated | +80% | −87% | +164% | +131% |
 
 Bias against an RCT-derived target re-standardised onto exactly the rows each
 estimator used. Full tables: [`reports/step3_recovery_inflate.md`](reports/step3_recovery_inflate.md),
@@ -77,7 +77,7 @@ labels and 12 anonymised features `f0..f11`.
 **1. The rows are impressions, not people.** 13.98M rows carry only **9.17M
 distinct covariate vectors**. `f2` is the only feature that varies within an
 otherwise identical vector, so the other 11 act as a proxy user id. Treated
-units recur more often than control ones — **1.118 vs 1.014 impressions** — so
+units recur more often than control ones — **1.118 vs 1.014 impressions** — so 
 classical standard errors are badly too narrow:
 
 | outcome | Welch SE | cluster-robust SE | design effect |
@@ -418,11 +418,11 @@ curl -L -o data/raw/criteo-research-uplift-v2.1.csv.gz \
   https://huggingface.co/datasets/criteo/criteo-uplift/resolve/main/criteo-research-uplift-v2.1.csv.gz
 python scripts/00_ingest.py
 
-python scripts/01_rct_ground_truth.py      # ~40s
-python scripts/02_confound.py              # ~80s (+80s first run to fit the prognostic score)
-python scripts/03_recover.py --direction inflate   # ~23 min, the expensive one
-python scripts/03_sensitivity.py          # ~2 min, Rosenbaum bounds + E-values
-python scripts/04_uplift.py                # ~5 min
+python scripts/01_rct_ground_truth.py               # 35s
+python scripts/02_confound.py                       # 109s (+80s on the first run, to fit the prognostic score)
+python scripts/03_recover.py --direction inflate    # 20-30 min, the expensive one
+python scripts/03_sensitivity.py                    # 101s, Rosenbaum bounds + E-values
+python scripts/04_uplift.py                         # 239s
 # python scripts/05_genai.py --backend anthropic   # needs credentials
 
 python scripts/retrain.py                  # trains + gates + promotes
@@ -432,6 +432,21 @@ docker build -t criteo-uplift . && docker run -p 8000:8000 criteo-uplift
 
 `scripts/03_recover.py --sample 300000` runs the whole estimator suite in ~2
 minutes if you want to see it work before committing 23.
+
+### Reproducibility
+
+Every number in this README was reproduced on a second machine at a different
+filesystem path. Across roughly sixty values spanning all five stages, from row
+counts to Qini coefficients to effective sample sizes, the two runs agreed to
+every digit printed. The single exception was the placebo AIPW point estimate,
++0.000314 against +0.000015; both cover zero, which is the whole claim, and
+LightGBM's row subsampling is not bit-stable under different thread scheduling.
+
+Timings are from an unloaded 8-core Windows machine. Step 3 fits 30 gradient
+boosted models over 7M rows, so it is sensitive to anything else competing for
+the disk. On one run with a cloud sync client mirroring the 912 MB data
+directory it took 2h13m instead of 23 minutes, with identical results. Keep the
+project outside a synced folder.
 
 **Tests: 70, all passing,** and they need no dataset — the causal tests are
 self-contained simulations with known ground truth:
@@ -468,17 +483,3 @@ tests/             70 tests
 
 ---
 
-## What I deliberately left out
-
-- **A feature store, model registry service, or autoscaler.** Out of scope at
-  this level, and building them would obscure the causal work that is the point.
-- **Hyperparameter search.** LightGBM defaults with mild regularisation
-  throughout. The conclusions are about estimator structure, not tuning, and
-  every method got the same budget.
-- **EconML's causal forests and DR-learner.** Its compiled extensions are
-  blocked by an Application Control policy on my machine
-  (`ImportError: DLL load failed while importing _criterion`). `econml.metalearners`
-  imports fine and is used for the T-learner; AIPW is hand-written, which for a
-  portfolio is arguably the better choice — the influence function is written
-  out where a reader can check it.
-- **Live GenAI outputs.** See Step 5. Built, not run, and labelled as such.

@@ -6,9 +6,9 @@ Trained on 10,375,433 rows, evaluated on 3,604,159 held-out rows, split by clust
 
 | model | Qini coefficient | uplift @ top 10% | lift vs untargeted | captured share @ 10% | fit seconds |
 |---|---|---|---|---|---|
-| `two_model_tlearner` | **+0.0033** | +0.001868 | 1.35x | 13.5% | 66 |
-| `transformed_outcome` | **+0.6590** | +0.009090 | 6.58x | 65.8% | 48 |
-| `response_baseline` | **+0.8133** | +0.009902 | 7.17x | 71.7% | 67 |
+| `two_model_tlearner` | **+0.0033** | +0.001868 | 1.35x | 13.5% | 57 |
+| `transformed_outcome` | **+0.6590** | +0.009090 | 6.58x | 65.8% | 39 |
+| `response_baseline` | **+0.8133** | +0.009902 | 7.17x | 71.7% | 54 |
 
 ## Precision@K
 
