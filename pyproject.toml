@@ -20,7 +20,10 @@ dependencies = [
 [project.optional-dependencies]
 serve = ["fastapi", "uvicorn[standard]", "pydantic"]
 genai = ["anthropic", "boto3", "python-dotenv"]
-dev = ["pytest"]
+# httpx is required by starlette's TestClient, which the serving contract
+# tests use. Without it those six tests error out rather than run, so it is a
+# hard test dependency and not an optional convenience.
+dev = ["pytest", "httpx"]
 
 [build-system]
 requires = ["hatchling"]

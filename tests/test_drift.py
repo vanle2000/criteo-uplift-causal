@@ -78,10 +78,30 @@ def test_band_thresholds():
     not (ROOT / "models" / "current" / "metadata.json").exists(),
     reason="no trained model; run scripts/retrain.py",
 )
+@pytest.mark.skipif(
+    not (ROOT / "data" / "processed" / "criteo_uplift.parquet").exists(),
+    reason="no ingested dataset; run scripts/00_ingest.py",
+)
 def test_monitor_runs_clean_against_its_own_training_data():
-    """End-to-end: the reference batch must not trip a feature alert."""
+    """End-to-end: the reference batch must not trip a feature alert.
+
+    The exit code and the presence of output are asserted BEFORE the substring
+    check, and that ordering is the whole point. Checking only
+    `"significant" not in stdout` passes vacuously when the script dies, since
+    empty output contains no such substring. That is not hypothetical: with no
+    dataset present this test reported a pass in CI while the script it
+    exercises was crashing on the missing parquet.
+
+    The dataset skip above is what should have happened there instead.
+    """
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "monitor_drift.py"), "--sample", "50000"],
         capture_output=True, text=True, cwd=ROOT,
     )
+    assert r.returncode == 0, (
+        f"monitor_drift.py exited {r.returncode} (non-zero means it raised an alert "
+        f"against its own training reference, or failed outright)\n"
+        f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    )
+    assert r.stdout.strip(), "monitor_drift.py produced no output"
     assert "significant" not in r.stdout.split("prediction")[0], r.stdout
