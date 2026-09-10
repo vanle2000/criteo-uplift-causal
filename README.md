@@ -9,7 +9,8 @@ and hoping, this project destroys the randomisation on purpose, applies the
 standard observational toolkit to the wreckage, and scores each method against
 the truth it was supposed to find.
 
-**Headline result.** After confounding pushes the naive estimate to **+237%**
+**Headline result** 
+After confounding pushes the naive estimate to **+237%**
 of the truth (and, in the mirror scenario, to the **wrong sign**), only one
 estimator lands within single digits in all four test conditions:
 
