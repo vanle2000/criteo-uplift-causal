@@ -266,7 +266,7 @@ user's impressions land on both sides.
 
 ![qini](reports/figures/step4_qini_conversion.png)
 
-Two uncomfortable findings, reported because they are true:
+Two uncomfortable findings that I found:
 
 **The two-model T-learner is indistinguishable from random targeting.** It is
 the first thing most people reach for. On a 0.29% outcome it differences two
@@ -294,12 +294,6 @@ reported anywhere: predicting "never converts" scores 99.66% and means nothing.
 
 ## Step 5 — the GenAI layer (under construction)
 
-**The code is complete and committed; no live model has been called.** There
-are no cost or latency figures in this repo because measuring them requires
-credentials I have not wired up, and inventing them would be worse than
-omitting them. 
-
-What is built ([`src/uplift/genai/`](src/uplift/genai/), [`scripts/05_genai.py`](scripts/05_genai.py)):
 
 ---
 
