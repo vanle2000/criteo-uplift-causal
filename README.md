@@ -168,7 +168,7 @@ score are unrelated ways of removing the same imbalance. That they land within
 
 ---
 
-## Step 3 — recovery, and what balance diagnostics do not tell you
+## Step 3 — recovery, and what balance diagnostics do not tell 
 
 The headline table is at the top. The finding underneath it is the one worth
 the project:
@@ -211,11 +211,9 @@ because the synthetic pre-period injects Bernoulli noise of order √p while the
 effect itself is ~0.001. The `violated` variant is biased by 80–165% by
 construction, which is the point of including it.
 
----
+**sensitivity when there is no answer key**
 
-## Step 3, part two: sensitivity when there is no answer key
-
-Steps 1–3 ask *which estimators recover a known answer*. That question only
+Steps 1–3 we ask *which estimators recover a known answer*. That question only
 exists because randomisation supplied the answer. On real observational data
 you are left with the contrapositive: **how strong would an unmeasured
 confounder have to be to explain this away?**
@@ -294,39 +292,18 @@ reported anywhere: predicting "never converts" scores 99.66% and means nothing.
 
 ---
 
-## Step 5 — the GenAI layer (built, not run)
+## Step 5 — the GenAI layer (under construction)
 
-⚠️ **The code is complete and committed; no live model has been called.** There
+**The code is complete and committed; no live model has been called.** There
 are no cost or latency figures in this repo because measuring them requires
 credentials I have not wired up, and inventing them would be worse than
-omitting them. Run it with `--backend anthropic` or `--backend bedrock` to
-populate the cache and the numbers.
+omitting them. 
 
 What is built ([`src/uplift/genai/`](src/uplift/genai/), [`scripts/05_genai.py`](scripts/05_genai.py)):
-
-- **Provider abstraction** over the Anthropic API and Bedrock, with a
-  content-addressed response cache and a `replay` backend, so once run the
-  whole evaluation reproduces offline and a reviewer scores *exactly* the
-  outputs that were scored originally.
-- **A written rubric** whose two heaviest criteria are dataset-specific:
-  *groundedness* (the features are anonymised — any output describing the
-  segment demographically has hallucinated) and *causal correctness* (base
-  conversion rate is not uplift; recommending a segment "because they convert
-  often" is the error the previous four steps exist to prevent).
-- **Three raters**: deterministic rules, an LLM judge, and a human spot-check
-  sheet, with quadratic-weighted Cohen's kappa between each pair. Unweighted
-  kappa would treat a 4-vs-5 disagreement as badly as 1-vs-5.
-- **Negative controls** — outputs corrupted on purpose with invented
-  demographics, fabricated revenue figures, and a confident call on a null
-  result. A judge that scores those highly is not a judge. Without them,
-  "the LLM judge gave us 4.6/5" is unfalsifiable.
 
 ---
 
 ## Step 6 — deployment
-
-Deliberately small. At L4 "production" means *something else depends on my
-model*, not *I own the serving platform*.
 
 - **FastAPI service** — `/health` (reports whether the artefact actually
   loaded, not just liveness), `/model`, `/score`. Verified in-container:
@@ -434,20 +411,6 @@ docker build -t criteo-uplift . && docker run -p 8000:8000 criteo-uplift
 `scripts/03_recover.py --sample 300000` runs the whole estimator suite in ~2
 minutes if you want to see it work before committing 23.
 
-### Reproducibility
-
-Every number in this README was reproduced on a second machine at a different
-filesystem path. Across roughly sixty values spanning all five stages, from row
-counts to Qini coefficients to effective sample sizes, the two runs agreed to
-every digit printed. The single exception was the placebo AIPW point estimate,
-+0.000314 against +0.000015; both cover zero, which is the whole claim, and
-LightGBM's row subsampling is not bit-stable under different thread scheduling.
-
-Timings are from an unloaded 8-core Windows machine. Step 3 fits 30 gradient
-boosted models over 7M rows, so it is sensitive to anything else competing for
-the disk. On one run with a cloud sync client mirroring the 912 MB data
-directory it took 2h13m instead of 23 minutes, with identical results. Keep the
-project outside a synced folder.
 
 **Tests: 70, all passing,** and they need no dataset — the causal tests are
 self-contained simulations with known ground truth:
@@ -455,11 +418,6 @@ self-contained simulations with known ground truth:
 ```bash
 pytest -q
 ```
-
-The one worth reading is `test_aipw_is_doubly_robust`: it asserts recovery when
-the propensity is right and the outcome model is garbage, recovery when the
-outcome model is right and the propensity is garbage, **and failure when both
-are wrong** — the honest half of the claim.
 
 ---
 
