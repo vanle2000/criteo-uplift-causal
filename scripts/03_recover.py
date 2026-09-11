@@ -53,7 +53,7 @@ def targets(df, mask_full, score, outcome) -> dict:
     return {"ate": ate, "att": att}
 
 
-def run_outcome(df, mask, cluster_sub, score_sel, outcome, args) -> dict:
+def run_outcome(df, mask, cluster_sub, score_sel, outcome, args, props) -> dict:
     """Full estimator suite for one outcome on the confounded subsample."""
     t = df[C.TREATMENT].to_numpy()[mask]
     y = df[outcome].to_numpy()[mask]
@@ -75,13 +75,9 @@ def run_outcome(df, mask, cluster_sub, score_sel, outcome, args) -> dict:
                     "n_used": n, "target_kind": "ate"})
 
     # ---- propensity models ---------------------------------------------
-    props = {}
-    for pm in ("lgbm", "logit"):
-        t0 = time.perf_counter()
-        p = E.fit_propensity(X, t, method=pm, n_folds=args.folds)
-        props[pm] = p
-        print(f"[step3] propensity {pm:<6} AUC {p.auc:.4f}  brier {p.brier:.5f}  "
-              f"calib slope {p.calibration_slope:.3f}  ({time.perf_counter()-t0:.0f}s)")
+    # Fitted once in main() and passed in. The propensity depends only on X and
+    # the treatment assignment, neither of which varies by outcome, so fitting
+    # it inside this function refitted an identical model for every outcome.
     out["propensity"] = {
         k: {"method": v.method, "auc": v.auc, "brier": v.brier,
             "calibration_slope": v.calibration_slope} for k, v in props.items()
@@ -311,9 +307,23 @@ def main() -> int:
     print(f"[step3] {args.direction}: {mask.sum():,} rows, "
           f"{len(np.unique(cluster)):,} clusters")
 
+    # One propensity fit for the whole run: e(X) is a function of the
+    # covariates and the arm only, so it is shared across outcomes.
+    X_sub = df[C.FEATURES][mask]
+    t_sub = df[C.TREATMENT].to_numpy()[mask]
+    props = {}
+    for pm in ("lgbm", "logit"):
+        t0 = time.perf_counter()
+        props[pm] = E.fit_propensity(X_sub, t_sub, method=pm, n_folds=args.folds)
+        pr = props[pm]
+        print(f"[step3] propensity {pm:<6} AUC {pr.auc:.4f}  brier {pr.brier:.5f}  "
+              f"calib slope {pr.calibration_slope:.3f}  ({time.perf_counter()-t0:.0f}s)")
+    del X_sub, t_sub
+
     res = {"step": 3, "direction": args.direction, "outcomes": {}}
     for outcome in args.outcomes:
-        res["outcomes"][outcome] = run_outcome(df, mask, cluster, score_sel, outcome, args)
+        res["outcomes"][outcome] = run_outcome(
+            df, mask, cluster, score_sel, outcome, args, props)
 
     res["runtime_seconds"] = round(time.perf_counter() - t0, 1)
     (C.REPORTS / f"step3_recovery_{args.direction}.json").write_text(

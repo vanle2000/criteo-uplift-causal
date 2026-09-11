@@ -1,5 +1,12 @@
 name: scheduled-retrain
 
+# A promoted model is committed straight back to the branch, so models/current
+# is always what the Docker image will serve. The cost is roughly 1.7 MB of git
+# history per promotion; at a weekly cadence that is a few tens of MB a year,
+# which is acceptable here and would not be at a real cadence. A production
+# setup would push the artefact to object storage or a model registry and have
+# the serving image pull it by version at build time.
+
 on:
   schedule:
     # 03:00 UTC every Monday. Weekly because the promotion gate compares
@@ -16,6 +23,11 @@ jobs:
   retrain:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # Needed to commit a promoted model back to the branch. Without this the
+    # job trains a better model and then throws it away, which is worse than
+    # not retraining at all.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,6 +47,23 @@ jobs:
       - name: Drift check against the training reference
         run: python scripts/monitor_drift.py --sample 200000
         continue-on-error: true   # drift is a signal to look, not a build break
+
+      # retrain.py exits 0 only when the model cleared the gate and was
+      # promoted into models/current, so this step is skipped on a rejection
+      # and the incumbent stays in place.
+      - name: Commit the promoted model
+        run: |
+          if git diff --quiet -- models/; then
+            echo "models/ unchanged; nothing to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          MODEL_ID=$(python -c "import json;print(json.load(open('models/current/metadata.json'))['model_id'])")
+          QINI=$(python -c "import json;print(round(json.load(open('models/current/metadata.json'))['metrics']['qini_coefficient'],4))")
+          git add models/current models/registry.jsonl
+          git commit -m "Promote ${MODEL_ID} (holdout Qini ${QINI})"
+          git push
 
       - uses: actions/upload-artifact@v4
         if: always()
