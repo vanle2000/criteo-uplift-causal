@@ -1,7 +1,7 @@
 {
-  "version": 1791195095,
-  "model_id": "uplift-conversion-20261005-101135",
-  "trained_at": "2026-10-05T10:11:35+0000",
+  "version": 1791800913,
+  "model_id": "uplift-conversion-20261012-102833",
+  "trained_at": "2026-10-12T10:28:33+0000",
   "n_train": 10375433,
   "n_eval": 3604159,
   "outcome": "conversion",
@@ -322,9 +322,9 @@
   "training_data_sha": "7a5b1145fdee98a0",
   "library_versions": {
     "lightgbm": "4.7.0",
-    "numpy": "2.5.3",
+    "numpy": "2.5.4",
     "pandas": "2.3.3",
-    "python": "3.12.14"
+    "python": "3.12.15"
   },
   "artifact_version": 1
 }
