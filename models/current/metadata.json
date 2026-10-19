@@ -1,7 +1,7 @@
 {
-  "version": 1791800913,
-  "model_id": "uplift-conversion-20261012-102833",
-  "trained_at": "2026-10-12T10:28:33+0000",
+  "version": 1792399052,
+  "model_id": "uplift-conversion-20261019-083732",
+  "trained_at": "2026-10-19T08:37:32+0000",
   "n_train": 10375433,
   "n_eval": 3604159,
   "outcome": "conversion",
