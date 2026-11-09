@@ -1,7 +1,7 @@
 {
-  "version": 1793616248,
-  "model_id": "uplift-conversion-20261102-104408",
-  "trained_at": "2026-11-02T10:44:08+0000",
+  "version": 1794222298,
+  "model_id": "uplift-conversion-20261109-110458",
+  "trained_at": "2026-11-09T11:04:58+0000",
   "n_train": 10375433,
   "n_eval": 3604159,
   "outcome": "conversion",
@@ -324,7 +324,7 @@
     "lightgbm": "4.7.0",
     "numpy": "2.5.4",
     "pandas": "2.3.3",
-    "python": "3.12.15"
+    "python": "3.12.16"
   },
   "artifact_version": 1
 }
