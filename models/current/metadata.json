@@ -1,7 +1,7 @@
 {
-  "version": 1794222298,
-  "model_id": "uplift-conversion-20261109-110458",
-  "trained_at": "2026-11-09T11:04:58+0000",
+  "version": 1794826081,
+  "model_id": "uplift-conversion-20261116-104801",
+  "trained_at": "2026-11-16T10:48:01+0000",
   "n_train": 10375433,
   "n_eval": 3604159,
   "outcome": "conversion",
@@ -36,7 +36,7 @@
     6.725157713644219e-05,
     6.725157713644219e-05,
     0.0001313205517239608,
-    0.00031202250130067763,
+    0.0003120225013006776,
     0.0011174093309365824
   ],
   "decile_train_shares": [
@@ -322,7 +322,7 @@
   "training_data_sha": "7a5b1145fdee98a0",
   "library_versions": {
     "lightgbm": "4.7.0",
-    "numpy": "2.5.4",
+    "numpy": "2.5.5",
     "pandas": "2.3.3",
     "python": "3.12.16"
   },
